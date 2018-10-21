@@ -1,5 +1,6 @@
 # Machine Learning Notes
-## Introduction
+
+# Introduction
 Tom Mitchell provides a more modern definition of Machine Learning:
 > *"A computer program is said to learn from **experience E** with respect to some class of **tasks T** and **performance measure P**, if its performance at tasks in T, as measured by P, improves with experience E."*
 
@@ -36,7 +37,7 @@ To describe the supervised learning problem slightly more formally, our goal is,
 ## Cost Function
 We can measure the accuracy of our hypothesis function by using a **cost function**. This takes an average difference of all the results of the hypothesis with inputs from $x$'s and the actual output $y$'s.
 
-$J(\theta_0,\theta_1) = \frac{1}{2m}\sum_{i=1}^m(h_\theta(x_i)-y_i)^2$
+$$J(\theta_0,\theta_1) = \frac{1}{2m}\sum_{i=1}^m(h_\theta(x_i)-y_i)^2$$
 
 To break it apart, it is $\frac{1}{2}\bar{x}$ where $\bar{x}$ is the mean of the squares of $h_\theta (x_{i}) - y_{i}$, or the difference between the predicted value and the actual value.
 
@@ -61,7 +62,7 @@ For example, the distance between each 'star' in the graph above represents a st
 
 *Repeat until convergence:*
 
-$\theta_j := \theta_j -\alpha\frac{∂}{∂\theta_j}J(\theta_0, \theta_1)$
+$$\theta_j := \theta_j -\alpha\frac{∂}{∂\theta_j}J(\theta_0, \theta_1)$$
 
 *where $j, i$ represents the feature index number*.
 
@@ -72,7 +73,7 @@ On a side note, we should adjust our parameter $\alpha$ to ensure that the gradi
 
 The intuition behind the convergence is that $\frac{d}{d\theta_1} J(\theta_1)$ approaches $0$ as we approach the bottom of our convex function. At the minimum, the derivative will always be $0$ and thus we get:
 
-$\theta_1 := \theta_1-\alpha*0$
+$$\theta_1 := \theta_1-\alpha*0$$
 
 This means gradient descent can converge to a local minimum, even with the **learning rate **$\alpha$** fixed**. As we approach a local minimum, gradient descent will automatically take smaller steps. So, no need to decrease $\alpha$ over time.
 
@@ -81,9 +82,9 @@ When specifically applied to the case of linear regression, a new form of the gr
 
 *Repeat until convergence: {*
 
-$\theta_0 := \theta_0 -\alpha\frac{1}{m}\sum_{i=1}^m(h_\theta(x_i)-y_i)$
+$$\theta_0 := \theta_0 -\alpha\frac{1}{m}\sum_{i=1}^m(h_\theta(x_i)-y_i)$$
 
-$\theta_1 := \theta_1 -\alpha\frac{1}{m}\sum_{i=1}^m(h_\theta(x_i)-y_i) x_i$
+$$\theta_1 := \theta_1 -\alpha\frac{1}{m}\sum_{i=1}^m(h_\theta(x_i)-y_i) x_i$$
 
 *} where $m$ is the size of the training set, $\theta_0$ a constant that will be changing simultaneously with $\theta_1$ and $x_{i}, y_{i}$ are values of the given training set (data)*.
 
@@ -111,3 +112,141 @@ $$\begin{pmatrix}a & b\\\ c & d\\e & f\end{pmatrix}*\begin{pmatrix}w & x\\ y & z
 An $m$ x $n$ matrix multiplied by an $n$ x $o$ matrix results in an $m$ x $o$ matrix. In the above example, a $3$ x $2$ matrix times a $2$ x $2$ matrix resulted in a $3$ x $2$ matrix.
 
 To multiply two matrices, the **number of columns of the first matrix** must **equal** the **number of rows of the second matrix**.
+
+# Multivariate Linear Regression
+
+## Multiple Features
+Linear regression with multiple variables is also known as "multivariate linear regression".
+
+We now introduce notation for equations where we can have any number of input variables.
+
+$x^{(i)}_j=$ value of feature $j$ in the $i^{th}$ training example.
+
+$x^{(i)} =$ the input (features) of the $i^{th}$ training example.
+
+$m=$ the number of training examples.
+
+$n=$ the number of features.
+
+The multivariable form of the hypothesis function accommodating these multiple features is as follows:
+
+$$h_\theta(x)=\theta_0+\theta_1x_1+\theta_2x_2+...+\theta_nx_n$$
+
+In order to develop intuition about this function, we can think about $\theta_0$ as the basic price of a house, $\theta_1$ as the price per square meter, $\theta_2$ as the price per floor, etc. $x_1$ will be the number of square meters in the house, $x_2$ the number of floors, etc.
+
+Using the definition of matrix multiplication, our multivariable hypothesis function can be concisely represented as:
+
+$$h_\theta(x)=\begin{pmatrix} \theta_0 & \theta_1 & ... & \theta_n \end{pmatrix}\begin{pmatrix}x_0 \\ x_1\\...\\x_n\end{pmatrix}= \theta^Tx$$
+
+This is a vectorization of our hypothesis function for one training example. *Remark*: Note that for convenience reasons in this course we assume $x_{0}^{(i)} =1$ $\text{ for } (i\in { 1,\dots, m } )$. This allows us to do matrix operations with theta and x.
+
+## Gradient Descent For Multiple Variables
+The gradient descent equation itself is generally the same form; we just have to repeat it for our 'n' features:
+
+*repeat until convergence:* {
+$$\theta_j:=\theta_j-\alpha\frac{1}{m}\sum_{i=1}^m(h_\theta(x^{(i)})-y^{(i)})⋅x_j^{(i)}\text{ for j:= 0 ... n}$$
+}
+
+The following image compares gradient descent with one variable to gradient descent with multiple variables:
+
+![](Pictures/2-1.png)
+
+## Gradient Descent Practice - Feature Scaling
+
+We can speed up gradient descent by having each of our input values in roughly the same range. This is because θ will descend quickly on small ranges and slowly on large ranges, and so will oscillate inefficiently down to the optimum when the variables are very uneven.
+
+The way to prevent this is to modify the ranges of our input variables so that they are all roughly the same. Ideally:
+
+$$-1 <=x_{(i)}<= 1$$
+
+or
+
+$$-0.5<=x_{(i)}<=0.5$$ 
+These aren't exact requirements; we are only trying to speed things up. The goal is to get all input variables into roughly one of these ranges, give or take a few.
+
+Two techniques to help with this are **feature scaling** and **mean normalization**. Feature scaling involves dividing the input values by the range (i.e. the maximum value minus the minimum value) of the input variable, resulting in a new range of just $1$. Mean normalization involves subtracting the average value for an input variable from the values for that input variable resulting in a new average value for the input variable of just zero. To implement both of these techniques, adjust your input values as shown in this formula:
+
+$$x_i:=\frac{x_i-\mu_i}{s_i}$$
+
+Where $μ_i$ is the average of all the values for feature (i) and $s_i$ is the range of values $(max - min)$, or $s_i$ is the **standard deviation**.
+
+*Note:* dividing by the range, or dividing by the standard deviation, give different results. The quizzes in this course use range - the programming exercises use standard deviation.
+
+## Gradient Descent Practice - Learning Rate
+**Debugging gradient descent**. Make a plot with number of iterations on the x-axis. Now plot the cost function, $J(θ)$ over the number of iterations of gradient descent. If $J(θ)$ ever increases, then you probably need to decrease $α$.
+
+**Automatic convergence test**. Declare convergence if $J(θ)$ decreases by less than $E$ in one iteration, where $E$ is some small value such as $10^{−3}$. However in practice it's difficult to choose this threshold value.
+
+![](Pictures/2-2.png)
+
+It has been proven that if learning rate α is sufficiently small, then J(θ) will decrease on every iteration.
+To summarize:
+
+*   If $\alpha$ is too small: slow convergence.
+*   If $\alpha$ is too large: ￼may not decrease on every iteration and thus may not converge.
+
+## Features and Polynomial Regression
+We can improve our features and the form of our hypothesis function in a couple different ways. 
+We can **combine** multiple features into one. For example, we can combine $x_1$ and $x_2$ into a new feature $x_3$ by taking $x_1⋅x_2$.
+
+### Polynomial Regression
+Our hypothesis function need not be linear (a straight line) if that does not fit the data well.
+
+We can **change the behavior or curve** of our hypothesis function by making it a quadratic, cubic or square root function (or any other form).
+
+For example, if our hypothesis function is $h_\theta(x)=\theta_0+\theta_1x_1$ then we can create additional features based on $x_1$, to get the quadratic function $h_\theta(x)=\theta_0+\theta_1x_1+\theta_2x_1^2$ or the cubic function $h_\theta(x)=\theta_0+\theta_1x_1+\theta_2x_1^2+\theta_3x_1^3$.
+
+*One important thing to keep in mind is, if you choose your features this way then feature scaling becomes very important.*
+
+## Computing Parameters Analytically
+
+### Normal Equation
+Gradient descent gives one way of minimizing $J$. Let’s discuss a second way of doing so, this time performing the minimization explicitly and without resorting to an iterative algorithm. In the "Normal Equation" method, we will minimize $J$ by explicitly taking its derivatives with respect to the θj ’s, and setting them to zero. This allows us to find the optimum theta without iteration. The normal equation formula is given below:
+$$\theta=(X^TX)^{-1}X^Ty$$
+
+There is **no need** to do feature scaling with the normal equation.
+The following is a comparison of gradient descent and the normal equation:
+
+| Gradient Descent | Normal Equation 
+|---|---
+| Need to choose alpha  | No need to choose alpha  
+| Needs many iterations  | No need to iterate
+| $\mathcal{O}(kn^2)$| $\mathcal{O}(n^3)$ need to calculate inverse of $X^TX$    
+| Works well when $n$ is large | Slow if $n$ is very large   
+
+With the normal equation, computing the inversion has complexity $\mathcal{O}(n^3)$. So if we have a very large number of features, the normal equation will be slow. In practice, when $n$ exceeds $10,000$ it might be a good time to go from a normal solution to an iterative process.
+
+
+
+
+
+## Useful Links for Matlab/Octave
+*   [MATLAB variables](https://youtu.be/0w9NKt6Fixk)
+*   [MATLAB as a calculator](https://youtu.be/aRSkNpCSgWY)
+*   [MATLAB functions](https://youtu.be/RJp46UVQBic)
+*   [Getting started with MATLAB Online](https://youtu.be/XjzxCVWKz58)
+*   [Managing files in MATLAB Online](https://youtu.be/B3lWLIrYjC0)
+*   [Creating vectors](https://youtu.be/R5Mnkrk9Mos)
+*   [Creating uniformly spaced vectors](https://youtu.be/_zqTOV5yl8Y)
+*   [Calculations with vectors](https://youtu.be/VQaZ0TvjF0c)
+*   [Vector transpose](https://youtu.be/vgRLwjHBmsg)
+*   [Line plots](https://youtu.be/-hhJoveE4sY)
+*   [Annotating Graphs](https://youtu.be/JyovEGPSdoI)
+*   [Multiple plots](https://youtu.be/fBx8EFuXFLM)
+*   [Creating matrices](https://youtu.be/qdTdwTh6jMo)
+*   [Calculations with matrices](https://youtu.be/mzzJ9gnMrYE)
+*   [Accessing elements of a matrix](https://youtu.be/uWPHxpTuZRA)
+*   [Matrix creation functions](https://youtu.be/VPcbpVd_mPA)
+*   [Combining matrices](https://youtu.be/ejTr3ekTTyA)
+*   [Determining array size and lenght](https://youtu.be/IF9-ffmxuy8)
+*   [Matrix multiplication](https://youtu.be/4hsx3bdNjGk)
+*   [Reshaping arrays](https://youtu.be/UQpDIHlFo8A)
+*   [Statistical functions with matrices](https://youtu.be/Y97W3_u7cM4)
+*   [Logical variables](https://youtu.be/bRMg4GsFDQ8)
+*   [If-Else statement](https://youtu.be/JZSuU-Laigo)
+*   [Writing a For loop](https://youtu.be/lg65bzgvI5c)
+*   [Writing a While loop](https://youtu.be/PKH5lCMJXbk)
+*   [Writing functions](https://youtu.be/GrcNN04eqXU)
+*   [Passing functions as input](https://youtu.be/aNCwR9dRjHs)
+*   [Which file or variable am I using?](https://youtu.be/Z09BvGeYNdE)
+*   [Troubleshooting with Debugger](https://youtu.be/DB4aJMnZtNQ)
