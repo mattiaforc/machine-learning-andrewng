@@ -418,3 +418,87 @@ $$J(θ)=−\frac{1}{m}∑_{i=1}^m\bigg[y^{(i)}log(h_θ(x^{(i)}))+(1−y^{(i)}) l
 The second sum, $\sum_{j=1}^n \theta_j^2$ means to explicitly exclude the bias term, $\theta_0$. I.e. the $θ$ vector is indexed from $0$ to $n$ (holding $n+1$ values, $\theta_0$ through $\theta_n$), and this sum explicitly skips $\theta_0$, by running from $1$ to $n$, skipping $0$. Thus, when computing the equation, we should continuously update the two following equations:
 
 ![](Pictures/3-8.png)
+
+# Neural Networks
+
+## Model Representation
+Let's examine how we will represent a hypothesis function using neural networks. At a very simple level, neurons are basically computational units that take inputs (dendrites) as electrical inputs (called "spikes") that are channeled to outputs (axons). In our model, our dendrites are like the input features $x_1, ..., x_n$, and the output is the result of our hypothesis function. In this model our $x_0$ input node is sometimes called the *"bias unit."* It is always equal to 1. In neural networks, we use the same logistic function as in classification, $\frac{1}{1+e^{-\theta^Tx}}$ yet we sometimes call it a sigmoid (logistic) **activation function**. In this situation, our "theta" parameters are sometimes called "weights". 
+
+Our input nodes (layer 1), also known as the "**input layer**", go into another node (layer 2), which finally outputs the hypothesis function, known as the "**output layer**". We can have intermediate layers of nodes between the input and output layers called the "**hidden layers**."
+
+In this example, we label these intermediate or "hidden" layer nodes $a_0^2 ... a_n^2$ and call them "activation units". 
+$$a_i^{(j)} = \text{ activation of unit i in layer j }$$
+$$\Theta^{(j)}=\text{ matrix of parameters controlling function mapping from layer j to layer j+1}$$
+The values for each of the "activation" nodes is obtained as follows:
+
+$$a^{(2)}_1=g(Θ^{(1)}_{10}x_0+Θ^{(1)}_{11}x_1+Θ^{(1)}_{12}x_2+Θ^{(1)}_{13}x_3)$$
+$$a^{(2)}_2=g(Θ^{(1)}_{20}x_0+Θ^{(1)}_{21}x_1+Θ^{(1)}_{22}x_2+Θ^{(1)}_{23}x_3)$$
+$$a^{(2)}_3=g(Θ^{(1)}_{30}x_0+Θ^{(1)}_{31}x_1+Θ^{(1)}_{32}x_2+Θ^{(1)}_{33}x_3)$$
+$$h_Θ(x)=a^{(3)}_1=g(Θ^{(2)}_{10}a^{(2)}_0+Θ^{(2)}_{11}a^{(2)}_1+Θ^{(2)}_{12}a^{(2)}_2+Θ^{(2)}_{13}a^{(2)}_3)$$
+
+This is saying that we compute our activation nodes by using a $3×4$ matrix of parameters. We apply each row of the parameters to our inputs to obtain the value for one activation node. Our hypothesis output is the logistic function applied to the sum of the values of our activation nodes, which have been multiplied by yet another parameter matrix $\Theta^{(2)}$ containing the weights for our second layer of nodes.
+
+Each layer gets its own matrix of weights, $\Theta^{(j)}$.
+
+The dimensions of these matrices of weights is determined as follows:
+
+$$\text{If network has $s_j$ units in layer $j$ and $s_{j+1}$ units in layer $j+1$, then $\Theta^{(j)}$ will be of dimension $s_{j+1} \times (s_j + 1)$.}$$
+
+The +1 comes from the addition in $\Theta^{(j)}$ of the "bias nodes," $x_0$ and $\Theta_0^{(j)}$. In other words the output nodes will not include the bias nodes while the inputs will. The following image summarizes our model representation:
+
+![](Pictures/4-1.png)
+
+To re-iterate, the following is an example of a neural network:
+
+$$a_1^{(2)} = g(\Theta_{10}^{(1)}x_0 + \Theta_{11}^{(1)}x_1 + \Theta_{12}^{(1)}x_2 + \Theta_{13}^{(1)}x_3) \newline a_2^{(2)} = g(\Theta_{20}^{(1)}x_0 + \Theta_{21}^{(1)}x_1 + \Theta_{22}^{(1)}x_2 + \Theta_{23}^{(1)}x_3) \newline a_3^{(2)} = g(\Theta_{30}^{(1)}x_0 + \Theta_{31}^{(1)}x_1 + \Theta_{32}^{(1)}x_2 + \Theta_{33}^{(1)}x_3) \newline h_\Theta(x) = a_1^{(3)} = g(\Theta_{10}^{(2)}a_0^{(2)} + \Theta_{11}^{(2)}a_1^{(2)} + \Theta_{12}^{(2)}a_2^{(2)} + \Theta_{13}^{(2)}a_3^{(2)}) \newline$$
+
+In this section we'll do a vectorized implementation of the above functions. We're going to define a new variable $z_k^{(j)}$ that encompasses the parameters inside our g function. In our previous example if we replaced by the variable z for all the parameters we would get:
+
+$$a_1^{(2)} = g(z_1^{(2)}) \newline a_2^{(2)} = g(z_2^{(2)}) \newline a_3^{(2)} = g(z_3^{(2)}) \newline $$
+In other words, for layer $j=2$ and node $k$, the variable $z$ will be:
+$$z_k^{(2)}=Θ_{k,0}^{(1)}x_0+Θ_{k,1}^{(1)}x_1+...+Θ_{k,n}^{(1)}x_n$$
+
+Setting $x = a^{(1)}$, we can rewrite the equation as:
+$$z^{(j)}=Θ^{(j−1)}a^{(j−1)}$$
+We are multiplying our matrix $\Theta^{(j-1)}$ with dimensions $s_j\times (n+1)$ (where $s_j$ is the number of our activation nodes) by our vector $a^{(j-1)}$ with height $(n+1)$. This gives us our vector $z^{(j)}$ with height $s_j$. Now we can get a vector of our activation nodes for layer j as follows:
+$$a^{(j)}=g(z^{(j)})$$
+Where our function $g$ can be applied element-wise to our vector $z^{(j)}$.
+
+We get this final $z$ vector by multiplying the next theta matrix after $\Theta^{(j-1)}$ with the values of all the activation nodes we just got. This last theta matrix $\Theta^{(j)}$ will have **only one row** which is multiplied by one column $a^{(j)}$ so that our result is a single number. We then get our final result with: $h_\Theta(x) = a^{(j+1)} = g(z^{(j+1)})$. Notice that in this **last step**, between layer j and layer j+1, **we are doing exactly the same thing** as we did in logistic regression. Adding all these intermediate layers in neural networks allows us to more elegantly produce interesting and more complex non-linear hypotheses.
+
+## Examples
+A simple example of applying neural networks is by predicting $x_1$ AND $x_2$, which is the logical 'and' operator and is only true if both $x_1$ and $x_2$ are 1.
+Remember that $x_0$ is our bias variable and is always 1.
+
+Let's set our first theta matrix as:
+$$Θ^{(1)}=\begin{matrix}[  −30 & 20 & 20 \end{matrix}]$$
+This will cause the output of our hypothesis to only be positive if both $x_1$ and $x_2$ are 1. In other words:
+
+$$h_\Theta(x) = g(-30 + 20x_1 + 20x_2)\newline\newline x_1 = 0 \ \ and \ \ x_2 = 0 \ \ then \ \ g(-30) \approx 0 \newline x_1 = 0 \ \ and \ \ x_2 = 1 \ \ then \ \ g(-10) \approx 0 \newline x_1 = 1 \ \ and \ \ x_2 = 0 \ \ then \ \ g(-10) \approx 0 \newline x_1 = 1 \ \ and \ \ x_2 = 1 \ \ then \ \ g(10) \approx 1$$ 
+So we have constructed one of the fundamental operations in computers by using a small neural network rather than using an actual AND gate. Neural networks can also be used to simulate all the other logical gates. The following is an example of the logical operator 'OR', meaning either $x_1$x is true or $x_2$ is true, or both:
+
+### OR Operator
+![](Pictures/4-2.png)
+
+Where $g(z)$ is the following:
+
+![](Pictures/4-3.png)
+
+## Multiclass Classification
+To classify data into multiple classes, we let our hypothesis function return a vector of values. Say we wanted to classify our data into one of four categories. We will use the following example to see how this classification is done. This algorithm takes as input an image and classifies it accordingly:
+
+![](Pictures/4-4.png)
+
+We can define our set of resulting classes as y:
+
+$$y^{(i)}=\begin{bmatrix}1 \\ 0 \\ 0 \\0 \end{bmatrix},\begin{bmatrix}0 \\ 1 \\ 0 \\0 \end{bmatrix},\begin{bmatrix}0 \\ 0 \\ 1 \\0 \end{bmatrix},\begin{bmatrix}0 \\ 0 \\ 0 \\1 \end{bmatrix},$$
+
+Each $y^{(i)}$ represents a different image corresponding to either a car, pedestrian, truck, or motorcycle. The inner layers, each provide us with some new information which leads to our final hypothesis function. The setup looks like:
+
+$$\begin{bmatrix}x_0 \\ x_1 \\ x_2 \\ ... \\ x_n \end{bmatrix},\begin{bmatrix} a_0^{(2)} \\ a_1^{(2)} \\ a_2^{(2)} \\ ... \end{bmatrix},\begin{bmatrix} a_0^{(3)} \\ a_1^{(3)} \\ a_2^{(3)} \\ ... \end{bmatrix}, \rightarrow ... \rightarrow \begin{bmatrix} h_\Theta(x)_1 \\ h_\Theta(x)_2 \\ h_\Theta(x)_3 \\ h_\Theta(x)_4 \end{bmatrix}$$
+
+Our resulting hypothesis for one set of inputs may look like:
+
+$$h_\Theta(x)=\begin{bmatrix} 0 \\ 0 \\ 1 \\ 0\end{bmatrix}$$
+
+In which case our resulting class is the third one down, or $h_Theta(x)_3$, which represents the motorcycle.
