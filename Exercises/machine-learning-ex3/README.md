@@ -186,7 +186,7 @@ pred = predictOneVsAll(all_theta, X);
 fprintf('\nTraining Set Accuracy: %f\n', mean(double(pred == y)) * 100);
 ```
 
-# ## Exercise file ex3_nn.m
+## Exercise file ex3_nn.m
 ```matlab
 %% Machine Learning Online Class - Exercise 3 | Part 2: Neural Networks
 
