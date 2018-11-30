@@ -850,3 +850,8 @@ For example, assume that we have 500 emails and our algorithm misclassifies a 10
 
 It is very important to get error results as a single, numerical value. Otherwise it is difficult to assess your algorithm's performance. For example if we use stemming, which is the process of treating the same word with different forms (fail/failing/failed) as one word (fail), and get a 3% error rate instead of 5%, then we should definitely add it to our model. However, if we try to distinguish between upper case and lower case letters and end up getting a 3.2% error rate instead of 3%, then we should avoid using this new feature. Hence, we should try new things, get a numerical value for our error rate, and based on our result decide whether we want to keep the new feature or not.
 
+## F Score, Precision/Recall
+
+![](Pictures/6-8.png)
+
+![](Pictures/6-7.png)
