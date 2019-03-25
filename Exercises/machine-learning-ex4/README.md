@@ -1,4 +1,4 @@
-# Exercise 3
+# Exercise 
 *NOTE: This file illustrates the main solutions to the problems specified in ex4.pdf, referred to Andrew Ng's Coursera Machine Learning course. It shows only snippets of code modified from the start kit.*
 
 ## Graphical results:
